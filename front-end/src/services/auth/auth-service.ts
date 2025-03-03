@@ -1,0 +1,44 @@
+import { UrlConstants } from '../../constants/url.constants';
+import apiStore from '../../store/api.store';
+
+export default class AuthService {
+  private static host = UrlConstants.backend;
+
+  static async performLogin(email: string, password: string): Promise<any> {
+    return new Promise((resolve, reject) => {
+      apiStore
+        .getApiClientWithoutAuthentication()
+        .post(`${this.host}/auth/login`, { email, password })
+        .then((response: any) => {
+          resolve(response.data);
+        })
+        .catch((error: any) => {
+          reject(error?.message || 'Login failed');
+        });
+    });
+  }
+
+  static async performSignup(
+    firstName: string,
+    lastName: string,
+    email: string,
+    password: string
+  ): Promise<any> {
+    return new Promise((resolve, reject) => {
+      apiStore
+        .getApiClientWithoutAuthentication()
+        .post(`${this.host}/auth/signup`, {
+          firstName,
+          lastName,
+          email,
+          password,
+        })
+        .then((response: any) => {
+          resolve(response.data);
+        })
+        .catch((error: any) => {
+          reject(error?.message || 'Signup failed');
+        });
+    });
+  }
+}
