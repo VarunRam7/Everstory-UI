@@ -4,7 +4,6 @@ import { useEffect, useState } from 'react';
 import AuthService from '../services/auth/auth-service';
 import { Link } from 'react-router-dom';
 import breakpoints from '../constants/breakpoints.constants';
-import everstoryLogo from '../assets/everstory-logo.png';
 
 const Signup = () => {
   const [loading, setLoading] = useState(false);
