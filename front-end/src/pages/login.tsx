@@ -1,16 +1,20 @@
 import { Button, Form, Input, message } from 'antd';
+import { Link, useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 
 import AuthService from '../services/auth/auth-service';
-import { Link } from 'react-router-dom';
+import { RouteConstants } from '../constants/route.constants';
 import breakpoints from '../constants/breakpoints.constants';
-import everstoryLogo from '../assets/everstory-logo.png';
+import { login } from '../features/auth/auth-slice';
+import { useDispatch } from 'react-redux';
 
 const Login = () => {
   const [loading, setLoading] = useState(false);
   const [isMobile, setIsMobile] = useState(
     window.innerWidth < breakpoints.mobile
   );
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   useEffect(() => {
     const handleResize = () => {
@@ -27,8 +31,10 @@ const Login = () => {
         values.email,
         values.password
       );
+      dispatch(login({ user: data, accessToken: data.accessToken }));
       localStorage.setItem('accessToken', data.accessToken);
       message.success('Login successful!');
+      navigate(RouteConstants.HOME);
     } catch (err) {
       message.error('Login failed. Please check your credentials.');
     } finally {
