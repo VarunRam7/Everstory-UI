@@ -105,3 +105,13 @@ nav a {
   border: none !important;
   box-shadow: none !important;
 }
+
+.custom-post-modal .ant-modal-title {
+  text-align: center;
+  background-color: #222;
+  color: white;
+}
+
+.custom-post-modal .ant-modal-content {
+  background-color: #222;
+}

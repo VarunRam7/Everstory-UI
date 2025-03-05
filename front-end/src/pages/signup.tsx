@@ -33,7 +33,12 @@ const Signup = () => {
         values.email,
         values.password
       );
-      dispatch(login({ user: data, accessToken: data.accessToken }));
+      dispatch(
+        login({
+          user: { ...data, id: data._id },
+          accessToken: data.accessToken,
+        })
+      );
       localStorage.setItem('accessToken', data.accessToken);
       message.success('Signup successful!');
       navigate(RouteConstants.HOME);

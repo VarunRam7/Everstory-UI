@@ -4,7 +4,7 @@ import apiStore from '../../store/api.store';
 export default class ImageService {
   private static host = UrlConstants.image_backend;
 
-  static async uploadProfilePhoto(file: File, email: string): Promise<any> {
+  static async uploadProfilePhoto(file: File, email: string): Promise<string> {
     return new Promise((resolve, reject) => {
       const formData = new FormData();
       formData.append('file', file);
@@ -48,6 +48,36 @@ export default class ImageService {
           reject(
             error?.response?.data?.message || 'Profile photo removal failed'
           );
+        });
+    });
+  }
+
+  static async uploadPost(
+    file: File,
+    userId: string,
+    caption?: string
+  ): Promise<string> {
+    return new Promise((resolve, reject) => {
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('userId', userId);
+      formData.append('caption', caption || '');
+
+      apiStore
+        .getApiClientWithAuthentication()
+        .post(`${this.host}/image/upload-post`, formData, {
+          headers: { 'Content-Type': 'multipart/form-data' },
+        })
+        .then((response: any) => {
+          if (!response?.data?.url) {
+            throw new Error('Image upload failed: No URL received');
+          }
+
+          resolve(response.data.url);
+        })
+        .catch((error: any) => {
+          console.error('Post upload error:', error);
+          reject(error?.response?.data?.message || 'Post upload failed');
         });
     });
   }

@@ -1,18 +1,20 @@
 import { Menu as AntdMenu, Popover } from 'antd';
-import { Home, Menu, PlusCircle, Search, User } from 'lucide-react';
+import { Home, Menu, PlusCircle, Search } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { useEffect, useState } from 'react';
 
+import CreatePostModal from './create-post-modal';
 import { RootState } from '../store';
 import { RouteConstants } from '../constants/route.constants';
 import { getInitials } from '../utils/string.utils';
 import { logout } from '../features/auth/auth-slice';
+import { useState } from 'react';
 
 const Sidebar = () => {
   const [collapsed, setCollapsed] = useState(false);
   const [visible, setVisible] = useState(false);
   const location = useLocation();
+  const [createPostModalVisible, setCreatePostModalVisible] = useState(false);
 
   const user = useSelector((state: RootState) => state.auth.user);
   const dispatch = useDispatch();
@@ -50,7 +52,9 @@ const Sidebar = () => {
       </button>
 
       {!collapsed && (
-        <p className='font-[cursive] text-lg text-center mb-6 text-[25px]'>Everstory</p>
+        <p className='font-[cursive] text-lg text-center mb-6 text-[25px]'>
+          Everstory
+        </p>
       )}
 
       <nav className='flex flex-col gap-4'>
@@ -66,13 +70,14 @@ const Sidebar = () => {
         >
           <Search color='white' /> {!collapsed && 'Search'}
         </Link>
-
-        <Link
-          to={RouteConstants.CREATE_POST}
+        <button
+          onClick={() => {
+            setCreatePostModalVisible(true);
+          }}
           className='flex items-center gap-2 p-3 hover:bg-gray-800 rounded-lg'
         >
           <PlusCircle color='white' /> {!collapsed && 'Create Post'}
-        </Link>
+        </button>
       </nav>
 
       <div
@@ -102,6 +107,14 @@ const Sidebar = () => {
           <span className='text-gray-400'>Loading...</span>
         )}
       </div>
+      <CreatePostModal
+        visible={createPostModalVisible}
+        onClose={() => setCreatePostModalVisible(false)}
+        userId={user?.id || ''}
+        onPostCreated={() => {
+          //TODO make an api call to get posts
+        }}
+      />
     </div>
   );
 };
