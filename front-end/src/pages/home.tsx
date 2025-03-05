@@ -11,7 +11,7 @@ const Home = () => {
       const userProfile = await AuthService.getProfile();
       dispatch(
         login({
-          user: userProfile,
+          user: { ...userProfile, id: userProfile._id },
           accessToken:
             localStorage.getItem('accessToken') || 'dummy_access_token',
         })
