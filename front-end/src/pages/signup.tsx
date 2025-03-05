@@ -1,15 +1,20 @@
 import { Button, Form, Input, message } from 'antd';
+import { Link, useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 
 import AuthService from '../services/auth/auth-service';
-import { Link } from 'react-router-dom';
+import { RouteConstants } from '../constants/route.constants';
 import breakpoints from '../constants/breakpoints.constants';
+import { login } from '../features/auth/auth-slice';
+import { useDispatch } from 'react-redux';
 
 const Signup = () => {
   const [loading, setLoading] = useState(false);
   const [isMobile, setIsMobile] = useState(
     window.innerWidth < breakpoints.mobile
   );
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const handleResize = () => {
@@ -28,8 +33,10 @@ const Signup = () => {
         values.email,
         values.password
       );
+      dispatch(login({ user: data, accessToken: data.accessToken }));
       localStorage.setItem('accessToken', data.accessToken);
       message.success('Signup successful!');
+      navigate(RouteConstants.HOME);
     } catch (err) {
       message.error('Signup failed. Please try again.');
     } finally {

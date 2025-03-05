@@ -4,6 +4,7 @@ interface User {
   firstName: string;
   lastName: string;
   email: string;
+  profilePhoto?: string;
 }
 
 interface AuthState {
@@ -30,6 +31,7 @@ const authSlice = createSlice({
     logout: (state) => {
       state.user = null;
       state.accessToken = null;
+      localStorage.setItem('accessToken', '');
     },
   },
 });
