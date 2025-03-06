@@ -1,7 +1,9 @@
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Route, BrowserRouter as Router, Routes } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 
 import AuthService from './services/auth/auth-service';
+import { ConfigProvider } from 'antd';
 import Home from './pages/home';
 import Layout from './components/layout';
 import Login from './pages/login';
@@ -12,6 +14,8 @@ import { RouteConstants } from './constants/route.constants';
 import Signup from './pages/signup';
 import { login } from './features/auth/auth-slice';
 import { useEffect } from 'react';
+
+const queryClient = new QueryClient();
 
 function App() {
   const dispatch = useDispatch();
@@ -39,27 +43,31 @@ function App() {
   }, [dispatch, user]);
 
   return (
-    <Router>
-      <Routes>
-        {/* Public Routes */}
-        <Route path={RouteConstants.SIGNUP} element={<Signup />} />
-        <Route path={RouteConstants.LOGIN} element={<Login />} />
+    <ConfigProvider>
+      <QueryClientProvider client={queryClient}>
+        <Router>
+          <Routes>
+            {/* Public Routes */}
+            <Route path={RouteConstants.SIGNUP} element={<Signup />} />
+            <Route path={RouteConstants.LOGIN} element={<Login />} />
 
-        {/* Protected Routes with Sidebar */}
-        <Route element={<ProtectedRoute />}>
-          <Route element={<Layout />}>
-            <Route path={RouteConstants.HOME} element={<Home />} />
-            <Route path={RouteConstants.PROFILE} element={<Profile />} />
-          </Route>
-        </Route>
+            {/* Protected Routes with Sidebar */}
+            <Route element={<ProtectedRoute />}>
+              <Route element={<Layout />}>
+                <Route path={RouteConstants.HOME} element={<Home />} />
+                <Route path={RouteConstants.PROFILE} element={<Profile />} />
+              </Route>
+            </Route>
 
-        {/* Default Route */}
-        <Route
-          path={RouteConstants.NOT_FOUND}
-          element={<h1>404 - Page Not Found</h1>}
-        />
-      </Routes>
-    </Router>
+            {/* Default Route */}
+            <Route
+              path={RouteConstants.NOT_FOUND}
+              element={<h1>404 - Page Not Found</h1>}
+            />
+          </Routes>
+        </Router>
+      </QueryClientProvider>
+    </ConfigProvider>
   );
 }
 

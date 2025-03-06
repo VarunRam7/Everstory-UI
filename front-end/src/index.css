@@ -115,3 +115,41 @@ nav a {
 .custom-post-modal .ant-modal-content {
   background-color: #222;
 }
+
+.custom-post-modal .ant-upload.ant-upload-select {
+  display: flex;
+  justify-content: center;
+}
+
+.custom-post-modal .ant-upload.ant-upload-select button {
+  height: 100px;
+  width: 400px;
+  justify-content: center;
+}
+
+textarea::placeholder {
+  color: #888 !important;
+  opacity: 1;
+  font-weight: 600;
+}
+
+.dot-loading::after {
+  content: '...';
+  display: inline-block;
+  animation: dots 1.5s steps(3, end) infinite;
+}
+
+@keyframes dots {
+  0% {
+    content: '';
+  }
+  33% {
+    content: '.';
+  }
+  66% {
+    content: '..';
+  }
+  100% {
+    content: '...';
+  }
+}

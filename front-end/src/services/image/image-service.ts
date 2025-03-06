@@ -81,4 +81,37 @@ export default class ImageService {
         });
     });
   }
+
+  static async getMyPosts(
+    userId: string,
+    page: number = 1,
+    pageSize: number = 6
+  ): Promise<any> {
+    return apiStore
+      .getApiClientWithAuthentication()
+      .get(`${this.host}/image/my-posts`, {
+        params: { userId, page, pageSize },
+      })
+      .then((response: any) => {
+        if (!response?.data?.posts) throw new Error('No posts received');
+        return response.data;
+      })
+      .catch((error: any) => {
+        throw error?.response?.data?.message || 'Failed to fetch posts';
+      });
+  }
+
+  static async deletePost(postId: string, imageUrl: string) {
+    return new Promise((resolve, reject) => {
+      apiStore
+        .getApiClientWithAuthentication()
+        .delete(`${this.host}/image/${postId}`, { data: { imageUrl } })
+        .then((response) => {
+          resolve(response.data.message);
+        })
+        .catch((error: any) => {
+          reject(error?.response?.data?.message || 'Delete post failed');
+        });
+    });
+  }
 }

@@ -1,10 +1,15 @@
 import AuthService from '../services/auth/auth-service';
+import { RouteConstants } from '../constants/route.constants';
 import { login } from '../features/auth/auth-slice';
+import { notification } from 'antd';
 import { useDispatch } from 'react-redux';
 import { useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 
 const Home = () => {
   const dispatch = useDispatch();
+  const location = useLocation();
+  const [api, contextHolder] = notification.useNotification();
 
   const fetchProfile = async () => {
     try {
@@ -23,10 +28,23 @@ const Home = () => {
 
   useEffect(() => {
     fetchProfile();
+    if (!sessionStorage.getItem('initialLoading')) {
+      if (location.state?.from === RouteConstants.LOGIN)
+        api['success']({
+          message: 'Logged into Everstory successfully 🎉',
+        });
+      else if (location.state?.from === RouteConstants.SIGNUP)
+        api['success']({
+          message: `Looks like you're all set 🎉`,
+          description: 'Welcome to Everstory',
+        });
+    }
+    sessionStorage.setItem('initialLoading', 'true');
   }, []);
 
   return (
     <div className='flex h-full w-full justify-center items-center bg-black'>
+      {contextHolder}
       <h1 className='text-4xl font-bold text-white'>Welcome to Everstory</h1>
     </div>
   );

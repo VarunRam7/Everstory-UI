@@ -2,6 +2,7 @@ import { Modal, Spin, Upload, message } from 'antd';
 import { useEffect, useState } from 'react';
 
 import ImageService from '../services/image/image-service';
+import MyPosts from './my-posts';
 import { RootState } from '../store';
 import { useSelector } from 'react-redux';
 
@@ -12,6 +13,7 @@ const Profile = () => {
   const [profileImage, setProfileImage] = useState<string | null>(
     user?.profilePhoto || null
   );
+  const [totalPosts, setTotalPosts] = useState(0);
 
   useEffect(() => {
     if (user?.profilePhoto) {
@@ -69,7 +71,7 @@ const Profile = () => {
         }`}
         onClick={() => setIsModalOpen(true)}
       >
-        {profileImage !== null ? (
+        {profileImage ? (
           <img
             src={profileImage}
             alt='Profile'
@@ -129,13 +131,13 @@ const Profile = () => {
         </div>
       </Modal>
 
-      <h2 className='mt-4 text-lg'>
+      <h2 className='mt-4 text-2xl font-[cursive]'>
         {user?.firstName} {user?.lastName}
       </h2>
 
       <div className='flex gap-6 mt-2'>
         <span>
-          <strong>0</strong> Posts
+          <strong>{totalPosts}</strong> Posts
         </span>
         <span>
           <strong>0</strong> Followers
@@ -144,6 +146,8 @@ const Profile = () => {
           <strong>0</strong> Following
         </span>
       </div>
+
+      <MyPosts setTotalPosts={setTotalPosts} />
     </div>
   );
 };
