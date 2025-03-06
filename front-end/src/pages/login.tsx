@@ -1,4 +1,4 @@
-import { Button, Form, Input, message } from 'antd';
+import { Button, Form, Input, message, notification } from 'antd';
 import { Link, useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 
@@ -38,8 +38,7 @@ const Login = () => {
         })
       );
       localStorage.setItem('accessToken', data.accessToken);
-      message.success('Login successful!');
-      navigate(RouteConstants.HOME);
+      navigate(RouteConstants.HOME, { state: { from: location.pathname } });
     } catch (err) {
       message.error('Login failed. Please check your credentials.');
     } finally {

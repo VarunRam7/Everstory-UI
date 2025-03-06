@@ -99,7 +99,7 @@ const Sidebar = () => {
                 {getInitials(user.lastName)}
               </div>
               {!collapsed && (
-                <span className='text-white'>{user.firstName}</span>
+                <span className='text-white'>{user.firstName} {user.lastName}</span>
               )}
             </div>
           </Popover>
@@ -111,9 +111,6 @@ const Sidebar = () => {
         visible={createPostModalVisible}
         onClose={() => setCreatePostModalVisible(false)}
         userId={user?.id || ''}
-        onPostCreated={() => {
-          //TODO make an api call to get posts
-        }}
       />
     </div>
   );

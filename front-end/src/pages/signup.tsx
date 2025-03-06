@@ -40,8 +40,7 @@ const Signup = () => {
         })
       );
       localStorage.setItem('accessToken', data.accessToken);
-      message.success('Signup successful!');
-      navigate(RouteConstants.HOME);
+      navigate(RouteConstants.HOME, { state: { from: location.pathname } });
     } catch (err) {
       message.error('Signup failed. Please try again.');
     } finally {
