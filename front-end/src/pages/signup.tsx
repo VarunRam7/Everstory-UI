@@ -2,7 +2,7 @@ import { Button, Form, Input, message } from 'antd';
 import { Link, useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 
-import AuthService from '../services/auth/auth-service';
+import AuthService from '../services/auth/auth.service';
 import { RouteConstants } from '../constants/route.constants';
 import breakpoints from '../constants/breakpoints.constants';
 import { login } from '../features/auth/auth-slice';

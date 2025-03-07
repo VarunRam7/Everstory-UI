@@ -2,7 +2,7 @@ import { Button, Form, Input, message, notification } from 'antd';
 import { Link, useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 
-import AuthService from '../services/auth/auth-service';
+import AuthService from '../services/auth/auth.service';
 import { RouteConstants } from '../constants/route.constants';
 import breakpoints from '../constants/breakpoints.constants';
 import { login } from '../features/auth/auth-slice';
@@ -15,6 +15,14 @@ const Login = () => {
   );
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const [api, contextHolder] = notification.useNotification();
+
+  const showError = (description: string) => {
+    api['error']({
+      message: 'Oops 🚨',
+      description,
+    });
+  };
 
   useEffect(() => {
     const handleResize = () => {
@@ -40,7 +48,7 @@ const Login = () => {
       localStorage.setItem('accessToken', data.accessToken);
       navigate(RouteConstants.HOME, { state: { from: location.pathname } });
     } catch (err) {
-      message.error('Login failed. Please check your credentials.');
+      showError('Login unsuccessful😞 Please verify your credentials!');
     } finally {
       setLoading(false);
     }
@@ -52,6 +60,7 @@ const Login = () => {
         isMobile ? 'flex-col' : 'md:flex-row'
       } h-screen w-screen`}
     >
+      {contextHolder}
       {/* Left Section - Pink Gradient */}
       <div className='w-full md:w-1/2 bg-gradient-to-b from-pink-300 to-pink-500 flex flex-col justify-center items-center text-white p-10'>
         <div className='flex flex-row mb-5'>

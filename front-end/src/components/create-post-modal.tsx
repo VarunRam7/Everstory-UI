@@ -1,6 +1,6 @@
 import { Input, Modal, Upload, message, notification } from 'antd';
 
-import ImageService from '../services/image/image-service';
+import ImageService from '../services/image/image.service';
 import { UploadOutlined } from '@ant-design/icons';
 import { useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';

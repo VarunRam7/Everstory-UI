@@ -1,17 +1,20 @@
-import { Menu as AntdMenu, Popover } from 'antd';
-import { Home, Menu, PlusCircle, Search, X } from 'lucide-react';
+import { Menu as AntdMenu, Popover, notification } from 'antd';
+import { Heart, Home, Menu, PlusCircle, Search, X } from 'lucide-react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { useEffect, useState } from 'react';
 
-import AuthService from '../services/auth/auth-service';
+import AuthService from '../services/auth/auth.service';
 import CreatePostModal from './create-post-modal';
+import FollowRequestService from '../services/friendship/follow-request.service';
+import { ResponseEnum } from '../enums/follow-request-status.enum';
 import { RootState } from '../store';
 import { RouteConstants } from '../constants/route.constants';
 import { getInitials } from '../utils/string.utils';
 import { isEmpty } from 'lodash';
 import { logout } from '../features/auth/auth-slice';
 import { motion } from 'framer-motion';
+import { removeFollowRequest } from '../features/follow-request/follow-request-slice';
 
 interface SidebarProps {
   collapsed: boolean;
@@ -25,11 +28,17 @@ const Sidebar: React.FC<SidebarProps> = ({ collapsed, setCollapsed }) => {
 
   const [visible, setVisible] = useState(false);
   const [searchVisible, setSearchVisible] = useState(false);
+  const [followRequestsVisible, setFollowRequestsVisible] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
+  const [api, contextHolder] = notification.useNotification();
 
   const user = useSelector((state: RootState) => state.auth.user);
+  const followRequests = useSelector(
+    (state: RootState) => state.followRequests.followRequests
+  );
+
   const dispatch = useDispatch();
 
   const handleLogout = () => {
@@ -89,6 +98,29 @@ const Sidebar: React.FC<SidebarProps> = ({ collapsed, setCollapsed }) => {
     navigate(`/user/${userId}`);
   };
 
+  const handleRespondToRequest = async (
+    requestToken: string,
+    status: ResponseEnum
+  ) => {
+    try {
+      const followRequest = await FollowRequestService.respondToRequest(
+        requestToken,
+        status
+      );
+      api['success']({
+        message: `Follow request ${status} successfully 🎉`,
+      });
+      if (followRequest.isExpired) {
+        dispatch(removeFollowRequest(requestToken));
+      }
+    } catch (error) {
+      api['error']({
+        message: 'Oops 🚨',
+        description: 'Failed to respond to request! Please try again!',
+      });
+    }
+  };
+
   return (
     <>
       <div
@@ -98,7 +130,7 @@ const Sidebar: React.FC<SidebarProps> = ({ collapsed, setCollapsed }) => {
       >
         <button
           onClick={() => setCollapsed(!collapsed)}
-          className={`${collapsed ? 'self-center' : 'self-end'} mb-4`}
+          className={`${collapsed ? 'self-center mb-12' : 'self-end mb-4'} `}
         >
           <Menu size={24} />
         </button>
@@ -109,17 +141,20 @@ const Sidebar: React.FC<SidebarProps> = ({ collapsed, setCollapsed }) => {
           </p>
         )}
 
-        <nav className='flex flex-col gap-4'>
-          <Link
-            to={RouteConstants.HOME}
-            className='flex items-center gap-2 p-3 hover:bg-gray-800 rounded-lg'
+        <nav className={`flex flex-col gap-5`}>
+          <button
+            onClick={() => navigate(RouteConstants.HOME)}
+            className={`flex items-center gap-2 p-3 rounded-lg !bg-black !hover:bg-[var(--color-gray-800)] !hover:border-transparent ${
+              collapsed ? 'w-12 h-12 !p-[0.3em]' : ''
+            }`}
           >
-            <Home color='white' /> {!collapsed && 'Home'}
-          </Link>
+            <Home color='white' /> {!collapsed && 'Home'}{' '}
+          </button>
+
           <button
             onClick={() => setSearchVisible(true)}
             className={`flex items-center gap-2 p-3 rounded-lg !bg-black !hover:bg-[var(--color-gray-800)] !hover:border-transparent ${
-              collapsed ? 'justify-center w-12 h-12 !p-[0.3em]' : ''
+              collapsed ? 'w-12 h-12 !p-[0.3em]' : ''
             }`}
           >
             <Search color='white' />
@@ -127,11 +162,19 @@ const Sidebar: React.FC<SidebarProps> = ({ collapsed, setCollapsed }) => {
           </button>
 
           <button
+            onClick={() => setFollowRequestsVisible(true)}
+            className={`flex items-center gap-2 p-3 rounded-lg !bg-black !hover:bg-[var(--color-gray-800)]`}
+          >
+            <Heart color='white' />
+            {!collapsed && 'Follow Requests'}
+          </button>
+
+          <button
             onClick={() => {
               setCreatePostModalVisible(true);
             }}
             className={`flex items-center gap-2 p-3 rounded-lg !bg-black !hover:bg-[var(--color-gray-800)] !hover:border-transparent ${
-              collapsed ? 'justify-center w-12 h-12 !p-[0.3em]' : ''
+              collapsed ? 'w-12 h-12 !p-[0.3em]' : ''
             }`}
           >
             <PlusCircle color='white' /> {!collapsed && 'Create Post'}
@@ -240,6 +283,90 @@ const Sidebar: React.FC<SidebarProps> = ({ collapsed, setCollapsed }) => {
               setSearchResults([]);
               setSearchQuery('');
             }}
+          >
+            <X size={32} />
+          </button>
+        </motion.div>
+      )}
+
+      {followRequestsVisible && (
+        <motion.div
+          initial={{ x: '-100%' }}
+          animate={{ x: 0 }}
+          exit={{ x: '-100%' }}
+          transition={{ duration: 0.4 }}
+          className='fixed inset-0 bg-black bg-opacity-90 flex flex-col items-center justify-start pt-20 z-50'
+        >
+          <div className='relative w-[40%] !bg-[#222] rounded-lg p-4'>
+            <h2 className='text-white text-lg font-bold mb-4'>
+              Follow Requests
+            </h2>
+
+            {followRequests.length > 0 ? (
+              followRequests.map((request) => (
+                <div
+                  key={request._id}
+                  className='p-4 cursor-pointer rounded-md flex items-center space-x-4'
+                  onClick={() => {
+                    setFollowRequestsVisible(false);
+                    navigate(`/user/${request.requestBy.id}`);
+                  }}
+                >
+                  {request.requestBy.profilePhoto ? (
+                    <img
+                      src={request.requestBy.profilePhoto}
+                      alt={request.requestBy.firstName}
+                      className='w-16 h-20 rounded-lg object-cover'
+                    />
+                  ) : (
+                    <div className='w-14 h-14 flex items-center justify-center bg-white text-gray-900 font-semibold rounded-lg'>
+                      {getInitials(request.requestBy.firstName)}
+                      {getInitials(request.requestBy.lastName)}
+                    </div>
+                  )}
+
+                  <div className='flex flex-col items-center gap-[5px]'>
+                    <span className='text-white font-medium'>
+                      {request.requestBy.firstName} {request.requestBy.lastName}
+                    </span>
+
+                    <div className='flex space-x-2 mt-1'>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleRespondToRequest(
+                            request.requestToken,
+                            ResponseEnum.ACCEPTED
+                          );
+                        }}
+                        className='w-[7em] h-[2em] !text-sm !p-0 !bg-blue-500 text-white rounded-md !hover:bg-blue-600'
+                      >
+                        Accept
+                      </button>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleRespondToRequest(
+                            request.requestToken,
+                            ResponseEnum.REJECTED
+                          );
+                        }}
+                        className='w-[7em] h-[2em] !text-sm !p-0 !bg-red-500 text-white rounded-md !hover:bg-red-600'
+                      >
+                        Reject
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              ))
+            ) : (
+              <p className='text-gray-500'>No pending follow requests.</p>
+            )}
+          </div>
+
+          <button
+            className='absolute top-6 right-6 text-white'
+            onClick={() => setFollowRequestsVisible(false)}
           >
             <X size={32} />
           </button>

@@ -1,4 +1,4 @@
-import AuthService from '../services/auth/auth-service';
+import AuthService from '../services/auth/auth.service';
 import { RouteConstants } from '../constants/route.constants';
 import { login } from '../features/auth/auth-slice';
 import { notification } from 'antd';
@@ -43,10 +43,12 @@ const Home = () => {
   }, []);
 
   return (
-    <div className='flex h-full w-full justify-center items-center bg-black'>
+    <>
       {contextHolder}
-      <h1 className='text-4xl font-bold text-white'>Welcome to Everstory</h1>
-    </div>
+      <div className='flex h-full w-full justify-center items-center bg-black'>
+        <h1 className='text-4xl font-bold text-white'>Welcome to Everstory</h1>
+      </div>
+    </>
   );
 };
 

@@ -1,7 +1,7 @@
 import { Modal, Spin, Upload, message } from 'antd';
 import { useEffect, useState } from 'react';
 
-import ImageService from '../services/image/image-service';
+import ImageService from '../services/image/image.service';
 import MyPosts from './my-posts';
 import { RootState } from '../store';
 import { useSelector } from 'react-redux';

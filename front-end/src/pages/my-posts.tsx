@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import { useInfiniteQuery, useQueryClient } from '@tanstack/react-query';
 
 import { DeleteOutlined } from '@ant-design/icons';
-import ImageService from '../services/image/image-service';
+import ImageService from '../services/image/image.service';
 import { RootState } from '../store';
 import { useInView } from 'react-intersection-observer';
 import { useSelector } from 'react-redux';
