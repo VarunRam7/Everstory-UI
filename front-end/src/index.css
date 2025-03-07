@@ -153,3 +153,13 @@ textarea::placeholder {
     content: '...';
   }
 }
+
+.unfollow-button.ant-dropdown-menu {
+  background-color: #222;
+}
+
+.unfollow-button .ant-dropdown-menu-title-content {
+  color: red;
+  text-align: center;
+  font-weight: 600;
+}

@@ -2,8 +2,9 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Route, BrowserRouter as Router, Routes } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 
-import AuthService from './services/auth/auth-service';
+import AuthService from './services/auth/auth.service';
 import { ConfigProvider } from 'antd';
+import FollowRequestService from './services/friendship/follow-request.service';
 import Home from './pages/home';
 import Layout from './components/layout';
 import Login from './pages/login';
@@ -14,6 +15,7 @@ import { RouteConstants } from './constants/route.constants';
 import Signup from './pages/signup';
 import UserProfile from './pages/user-profile';
 import { login } from './features/auth/auth-slice';
+import { setFollowRequests } from './features/follow-request/follow-request-slice';
 import { useEffect } from 'react';
 
 const queryClient = new QueryClient();
@@ -37,11 +39,23 @@ function App() {
     }
   };
 
+  const fetchFollowRequests = async () => {
+    if (!user?.id) return;
+    try {
+      const requests = await FollowRequestService.getFollowRequests(user.id);
+      dispatch(setFollowRequests(requests));
+    } catch (error) {
+      console.error('Error fetching follow requests:', error);
+    }
+  };
+
   useEffect(() => {
     if (!user) {
       fetchProfile();
+    } else {
+      fetchFollowRequests();
     }
-  }, [dispatch, user]);
+  }, [user]);
 
   return (
     <ConfigProvider>

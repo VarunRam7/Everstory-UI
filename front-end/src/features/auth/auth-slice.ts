@@ -33,6 +33,7 @@ const authSlice = createSlice({
       state.user = null;
       state.accessToken = null;
       localStorage.setItem('accessToken', '');
+      sessionStorage.removeItem('initialLoading');
     },
   },
 });

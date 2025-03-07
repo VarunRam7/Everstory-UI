@@ -1,85 +1,166 @@
+import { Button, Dropdown, Menu, Spin, notification } from 'antd';
 import { useEffect, useState } from 'react';
 
-import AuthService from '../services/auth/auth-service';
-import { Spin } from 'antd';
+import AuthService from '../services/auth/auth.service';
+import { DownOutlined } from '@ant-design/icons';
+import FollowRequestService from '../services/friendship/follow-request.service';
+import RelationshipService from '../services/friendship/relationship.service';
+import { RootState } from '../store';
 import { getInitials } from '../utils/string.utils';
-import { notification } from 'antd';
 import { useParams } from 'react-router-dom';
+import { useSelector } from 'react-redux';
 
 const UserProfile = () => {
   const { userId } = useParams();
-  const [user, setUser] = useState<any>(null);
+  const [userProfile, setUserProfile] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [profileImage, setProfileImage] = useState<string | null>(null);
+  const user = useSelector((state: RootState) => state.auth.user);
   const [api, contextHolder] = notification.useNotification();
 
-  useEffect(() => {
-    const fetchUser = async () => {
-      try {
-        const userData = await AuthService.getUserDetailsById(userId as string);
-        setUser(userData);
-        setProfileImage(userData?.profilePhoto || null);
-      } catch (err) {
-        api.error({
-          message: 'Oops 🚨',
-          description: 'Failed to fetch user profile',
-        });
-      } finally {
-        setLoading(false);
-      }
-    };
+  const showError = (description: string) => {
+    api['error']({
+      message: 'Oops 🚨',
+      description,
+    });
+  };
 
+  const fetchUser = async () => {
+    try {
+      const userData = await AuthService.getUserDetailsById(userId as string);
+      setUserProfile(userData);
+      setProfileImage(userData?.profilePhoto || null);
+    } catch (err) {
+      showError('Failed to fetch user profile');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
     fetchUser();
   }, [userId]);
 
+  const handleFollowRequest = async () => {
+    try {
+      await FollowRequestService.createFollowRequest(
+        user?.id || '',
+        userProfile.id
+      );
+      fetchUser();
+      api.success({
+        message: 'Follow request sent successfully 🎉',
+      });
+    } catch (error: any) {
+      showError(error || 'Failed to send follow request');
+    }
+  };
+
+  const handleUnfollow = async () => {
+    try {
+      await RelationshipService.unfollowUser(user?.id || '', userProfile.id);
+      fetchUser();
+      api.success({ message: 'User unfollowed successfully 🎉' });
+    } catch (error: any) {
+      showError(error || 'Failed to unfollow user');
+    }
+  };
+
+  const handleRevokeRequest = async () => {
+    try {
+      await FollowRequestService.revokeRequest(user?.id || '', userProfile.id);
+      fetchUser();
+      api.success({ message: 'Revoked request successfully 🎉' });
+    } catch (error: any) {
+      showError(error || 'Failed to revoke request');
+    }
+  };
+
+  const menu = (
+    <Menu className='unfollow-button'>
+      <Menu.Item key='1' onClick={handleUnfollow}>
+        Unfollow
+      </Menu.Item>
+    </Menu>
+  );
+
   if (loading) return <p className='text-gray-500'>Loading user profile...</p>;
 
-  if (!user)
-    return <p className='text-gray-500'>{contextHolder} User not found.</p>;
+  if (!userProfile) return <p className='text-gray-500'>User not found.</p>;
 
   return (
-    <div className='flex flex-col mt-5 items-center text-white relative'>
+    <>
       {contextHolder}
+      <div className='flex flex-col mt-5 items-center text-white relative'>
+        {loading && (
+          <div className='absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 z-10'>
+            <Spin size='large' />
+          </div>
+        )}
 
-      {loading && (
-        <div className='absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 z-10'>
-          <Spin size='large' />
+        <div className='w-32 h-32 flex items-center justify-center rounded-full bg-white relative'>
+          {profileImage ? (
+            <img
+              src={profileImage}
+              alt='Profile'
+              className='rounded-full w-full h-full object-cover border-1 border-white'
+            />
+          ) : (
+            <span className='font-bold text-black text-5xl'>
+              {getInitials(userProfile.firstName)}
+              {getInitials(userProfile.lastName)}
+            </span>
+          )}
         </div>
-      )}
 
-      <div
-        className={`w-32 h-32 flex items-center justify-center rounded-full bg-white relative`}
-      >
-        {profileImage ? (
-          <img
-            src={profileImage}
-            alt='Profile'
-            className='rounded-full w-full h-full object-cover border-1 border-white'
-          />
-        ) : (
-          <span className='font-bold text-black text-5xl'>
-            {getInitials(user.firstName)}
-            {getInitials(user.lastName)}
+        <h2 className='mt-4 text-2xl font-[cursive]'>
+          {userProfile?.firstName} {userProfile?.lastName}
+        </h2>
+
+        <div className='flex gap-6 mt-2'>
+          <span>
+            <strong>{userProfile.totalPosts}</strong> Posts
           </span>
+          <span>
+            <strong>{userProfile.followersCount || 0}</strong> Followers
+          </span>
+          <span>
+            <strong>{userProfile.followingCount || 0}</strong> Following
+          </span>
+        </div>
+
+        {userProfile.isFollowing ? (
+          <Dropdown overlay={menu} trigger={['click']}>
+            <Button type='primary' className='mt-4 !font-semibold'>
+              Following{' '}
+              <DownOutlined
+                style={{
+                  fontSize: '10px',
+                  marginLeft: '5px',
+                  marginTop: '3px',
+                }}
+              />
+            </Button>
+          </Dropdown>
+        ) : userProfile.isRequested ? (
+          <Button
+            type='default'
+            className='mt-4 !font-semibold'
+            onClick={handleRevokeRequest}
+          >
+            Requested
+          </Button>
+        ) : (
+          <Button
+            type='primary'
+            className='mt-4 !font-semibold'
+            onClick={handleFollowRequest}
+          >
+            Follow
+          </Button>
         )}
       </div>
-
-      <h2 className='mt-4 text-2xl font-[cursive]'>
-        {user?.firstName} {user?.lastName}
-      </h2>
-
-      <div className='flex gap-6 mt-2'>
-        <span>
-          <strong>{user.totalPosts}</strong> Posts
-        </span>
-        <span>
-          <strong>0</strong> Followers
-        </span>
-        <span>
-          <strong>0</strong> Following
-        </span>
-      </div>
-    </div>
+    </>
   );
 };
 
