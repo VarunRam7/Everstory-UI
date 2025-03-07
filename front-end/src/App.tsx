@@ -12,6 +12,7 @@ import ProtectedRoute from './components/protected-route';
 import { RootState } from './store';
 import { RouteConstants } from './constants/route.constants';
 import Signup from './pages/signup';
+import UserProfile from './pages/user-profile';
 import { login } from './features/auth/auth-slice';
 import { useEffect } from 'react';
 
@@ -56,6 +57,10 @@ function App() {
               <Route element={<Layout />}>
                 <Route path={RouteConstants.HOME} element={<Home />} />
                 <Route path={RouteConstants.PROFILE} element={<Profile />} />
+                <Route
+                  path={RouteConstants.USER_PROFILE}
+                  element={<UserProfile />}
+                />
               </Route>
             </Route>
 

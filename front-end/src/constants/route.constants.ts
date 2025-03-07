@@ -5,5 +5,6 @@ export const RouteConstants = {
   PROFILE: '/profile',
   CREATE_POST: '/create-post',
   SEARCH: '/search',
+  USER_PROFILE:'/user/:userId',
   NOT_FOUND: '*',
 };

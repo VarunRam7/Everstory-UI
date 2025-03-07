@@ -169,8 +169,12 @@ const MyPosts: React.FC<MyPostsProps> = ({ setTotalPosts }) => {
             style={{ fontFamily: 'Figtree' }}
             className='text-lg font-semibold text-white px-4 py-6 border-b border-gray-600'
           >
-            Delete Post?
+            Delete Post? <br />{' '}
+            <span className='font-light text-sm'>
+              Are you sure you want to delete this post?
+            </span>
           </h3>
+
           <button
             className='text-red-500 text-md py-3 border-b border-gray-600 w-full'
             onClick={handleDeletePost}
