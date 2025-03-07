@@ -55,4 +55,34 @@ export default class AuthService {
         });
     });
   }
+
+  static async fetchUsers(searchQuery?: string): Promise<any> {
+    return new Promise((resolve, reject) => {
+      apiStore
+        .getApiClientWithAuthentication()
+        .get(`${this.host}/auth/all-users`, {
+          params: searchQuery ? { searchString: searchQuery } : {},
+        })
+        .then((response: any) => {
+          resolve(response.data);
+        })
+        .catch((error: any) => {
+          reject(error?.message || 'Failed to fetch users');
+        });
+    });
+  }
+
+  static async getUserDetailsById(userId: string): Promise<any> {
+    return new Promise((resolve, reject) => {
+      apiStore
+        .getApiClientWithAuthentication()
+        .get(`${this.host}/auth/user/${userId}`)
+        .then((response: any) => {
+          resolve(response.data);
+        })
+        .catch((error: any) => {
+          reject(error?.message || 'Failed to fetch user profile');
+        });
+    });
+  }
 }
