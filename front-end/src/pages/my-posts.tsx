@@ -4,16 +4,19 @@ import { useInfiniteQuery, useQueryClient } from '@tanstack/react-query';
 
 import { DeleteOutlined } from '@ant-design/icons';
 import ImageService from '../services/image/image.service';
-import { RootState } from '../store';
 import { useInView } from 'react-intersection-observer';
-import { useSelector } from 'react-redux';
 
 type MyPostsProps = {
   setTotalPosts: (count: number) => void;
+  userId: string;
+  isMyProfile?: boolean;
 };
 
-const MyPosts: React.FC<MyPostsProps> = ({ setTotalPosts }) => {
-  const userId = useSelector((state: RootState) => state.auth.user?.id);
+const MyPosts: React.FC<MyPostsProps> = ({
+  setTotalPosts,
+  userId,
+  isMyProfile,
+}) => {
   const [api, contextHolder] = notification.useNotification();
 
   const showError = (description: string) => {
@@ -137,13 +140,14 @@ const MyPosts: React.FC<MyPostsProps> = ({ setTotalPosts }) => {
       >
         {selectedPost && (
           <div className='relative flex justify-center items-center'>
-            {/* Delete Button */}
-            <button
-              className='absolute top-4 right-4 text-red-500 text-xl hover:text-red-700 transition'
-              onClick={() => setDeleteConfirmVisible(true)}
-            >
-              <DeleteOutlined />
-            </button>
+            {isMyProfile && (
+              <button
+                className='absolute top-4 right-4 text-red-500 text-xl hover:text-red-700 transition'
+                onClick={() => setDeleteConfirmVisible(true)}
+              >
+                <DeleteOutlined />
+              </button>
+            )}
 
             {/* Full-size Image */}
             <img

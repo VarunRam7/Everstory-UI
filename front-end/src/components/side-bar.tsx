@@ -35,6 +35,7 @@ const Sidebar: React.FC<SidebarProps> = ({ collapsed, setCollapsed }) => {
   const [api, contextHolder] = notification.useNotification();
 
   const user = useSelector((state: RootState) => state.auth.user);
+
   const followRequests = useSelector(
     (state: RootState) => state.followRequests.followRequests
   );
@@ -141,21 +142,23 @@ const Sidebar: React.FC<SidebarProps> = ({ collapsed, setCollapsed }) => {
           </p>
         )}
 
-        <nav className={`flex flex-col gap-5`}>
+        <nav className='flex flex-col gap-5'>
           <button
             onClick={() => navigate(RouteConstants.HOME)}
-            className={`flex items-center gap-2 p-3 rounded-lg !bg-black !hover:bg-[var(--color-gray-800)] !hover:border-transparent ${
-              collapsed ? 'w-12 h-12 !p-[0.3em]' : ''
-            }`}
+            className={`flex no-border-hover items-center gap-2 p-3 rounded-lg bg-black transition-all duration-300
+      bg-gradient-to-r from-black to-black hover:from-gray-700 hover:to-black ${
+        collapsed ? 'w-12 h-12 !p-[0.3em]' : ''
+      }`}
           >
-            <Home color='white' /> {!collapsed && 'Home'}{' '}
+            <Home color='white' /> {!collapsed && 'Home'}
           </button>
 
           <button
             onClick={() => setSearchVisible(true)}
-            className={`flex items-center gap-2 p-3 rounded-lg !bg-black !hover:bg-[var(--color-gray-800)] !hover:border-transparent ${
-              collapsed ? 'w-12 h-12 !p-[0.3em]' : ''
-            }`}
+            className={`flex no-border-hover items-center gap-2 p-3 rounded-lg bg-black transition-all duration-300
+      bg-gradient-to-r from-black to-black hover:from-gray-700 hover:to-black ${
+        collapsed ? 'w-12 h-12 !p-[0.3em]' : ''
+      }`}
           >
             <Search color='white' />
             {!collapsed && 'Search'}
@@ -163,9 +166,21 @@ const Sidebar: React.FC<SidebarProps> = ({ collapsed, setCollapsed }) => {
 
           <button
             onClick={() => setFollowRequestsVisible(true)}
-            className={`flex items-center gap-2 p-3 rounded-lg !bg-black !hover:bg-[var(--color-gray-800)]`}
+            className={`relative no-border-hover ${
+              collapsed && 'h-[48px] w-[48px]'
+            } flex items-center gap-2 rounded-lg bg-black transition-all duration-300
+      bg-gradient-to-r from-black to-black hover:from-gray-700 hover:to-black ${
+        collapsed && '!p-[5px]'
+      }`}
           >
-            <Heart color='white' />
+            <div className='relative'>
+              <Heart color='white' />
+              {followRequests.length > 0 && (
+                <span className='absolute -top-2 -right-2.5 bg-red-500 text-white text-xs font-bold px-1.5 py-0.5 rounded-full min-w-[18px] text-center'>
+                  {followRequests.length > 99 ? '99+' : followRequests.length}
+                </span>
+              )}
+            </div>
             {!collapsed && 'Follow Requests'}
           </button>
 
@@ -173,9 +188,10 @@ const Sidebar: React.FC<SidebarProps> = ({ collapsed, setCollapsed }) => {
             onClick={() => {
               setCreatePostModalVisible(true);
             }}
-            className={`flex items-center gap-2 p-3 rounded-lg !bg-black !hover:bg-[var(--color-gray-800)] !hover:border-transparent ${
-              collapsed ? 'w-12 h-12 !p-[0.3em]' : ''
-            }`}
+            className={`flex no-border-hover items-center gap-2 p-3 rounded-lg bg-black transition-all duration-300
+      bg-gradient-to-r from-black to-black hover:from-gray-700 hover:to-black ${
+        collapsed ? 'w-12 h-12 !p-[0.3em]' : ''
+      }`}
           >
             <PlusCircle color='white' /> {!collapsed && 'Create Post'}
           </button>
