@@ -101,6 +101,26 @@ export default class ImageService {
       });
   }
 
+  static async getHomeFeed(
+    userId: string,
+    page: number = 1,
+    pageSize: number = 6
+  ): Promise<any> {
+    return apiStore
+      .getApiClientWithAuthentication()
+      .get(`${this.host}/image/home`, {
+        params: { userId, page, pageSize },
+      })
+      .then((response: any) => {
+        if (!response?.data?.posts)
+          throw new Error('No posts to be shown in home feed');
+        return response.data;
+      })
+      .catch((error: any) => {
+        throw error?.response?.data?.message || 'Failed to fetch home feed';
+      });
+  }
+
   static async deletePost(postId: string, imageUrl: string) {
     return new Promise((resolve, reject) => {
       apiStore

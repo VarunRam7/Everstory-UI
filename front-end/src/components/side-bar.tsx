@@ -108,6 +108,7 @@ const Sidebar: React.FC<SidebarProps> = ({ collapsed, setCollapsed }) => {
         requestToken,
         status
       );
+
       api['success']({
         message: `Follow request ${status} successfully 🎉`,
       });
@@ -165,6 +166,7 @@ const Sidebar: React.FC<SidebarProps> = ({ collapsed, setCollapsed }) => {
           </button>
 
           <button
+            key={followRequests.length}
             onClick={() => setFollowRequestsVisible(true)}
             className={`relative no-border-hover ${
               collapsed && 'h-[48px] w-[48px]'

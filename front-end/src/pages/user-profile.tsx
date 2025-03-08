@@ -122,7 +122,7 @@ const UserProfile = () => {
 
         <div className='flex gap-6 mt-2'>
           <span>
-            <strong>{totalPosts}</strong> Posts
+            <strong>{totalPosts || 0}</strong> Posts
           </span>
           <span>
             <strong>{userProfile.followersCount || 0}</strong> Followers
