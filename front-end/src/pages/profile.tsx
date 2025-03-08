@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import ImageService from '../services/image/image.service';
 import MyPosts from './my-posts';
 import { RootState } from '../store';
+import { getInitials } from '../utils/string.utils';
 import { useSelector } from 'react-redux';
 
 const Profile = () => {
@@ -79,7 +80,9 @@ const Profile = () => {
           />
         ) : (
           <span className='font-bold text-black text-5xl'>
-            {user ? user.firstName[0] + user.lastName[0] : ''}
+            {user
+              ? getInitials(user.firstName) + getInitials(user.lastName)
+              : ''}
           </span>
         )}
       </div>
@@ -137,7 +140,7 @@ const Profile = () => {
 
       <div className='flex gap-6 mt-2'>
         <span>
-          <strong>{totalPosts}</strong> Posts
+          <strong>{totalPosts || 0}</strong> Posts
         </span>
         <span>
           <strong>{user?.followers || 0}</strong> Followers

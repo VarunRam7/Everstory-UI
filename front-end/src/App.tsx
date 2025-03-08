@@ -10,6 +10,7 @@ import Layout from './components/layout';
 import Login from './pages/login';
 import Profile from './pages/profile';
 import ProtectedRoute from './components/protected-route';
+import PublicRoute from './components/public-route';
 import { RootState } from './store';
 import { RouteConstants } from './constants/route.constants';
 import Signup from './pages/signup';
@@ -63,9 +64,11 @@ function App() {
         <Router>
           <Routes>
             {/* Public Routes */}
-            <Route path={RouteConstants.SIGNUP} element={<Signup />} />
-            <Route path={RouteConstants.LOGIN} element={<Login />} />
-
+            <Route element={<PublicRoute />}>
+              <Route path={RouteConstants.SIGNUP} element={<Signup />} />
+              <Route path={RouteConstants.LOGIN} element={<Login />} />
+              <Route path={'/'} element={<Login />} />
+            </Route>
             {/* Protected Routes with Sidebar */}
             <Route element={<ProtectedRoute />}>
               <Route element={<Layout />}>

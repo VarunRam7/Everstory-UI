@@ -167,3 +167,9 @@ textarea::placeholder {
   text-align: center;
   font-weight: 600;
 }
+
+@media (min-width: 1200px) {
+  .custom-width {
+    width: 40%;
+  }
+}
