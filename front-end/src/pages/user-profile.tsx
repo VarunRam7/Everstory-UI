@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import AuthService from '../services/auth/auth.service';
 import { DownOutlined } from '@ant-design/icons';
 import FollowRequestService from '../services/friendship/follow-request.service';
+import MyPosts from './my-posts';
 import RelationshipService from '../services/friendship/relationship.service';
 import { RootState } from '../store';
 import { getInitials } from '../utils/string.utils';
@@ -17,6 +18,7 @@ const UserProfile = () => {
   const [profileImage, setProfileImage] = useState<string | null>(null);
   const user = useSelector((state: RootState) => state.auth.user);
   const [api, contextHolder] = notification.useNotification();
+  const [totalPosts, setTotalPosts] = useState(0);
 
   const showError = (description: string) => {
     api['error']({
@@ -29,6 +31,7 @@ const UserProfile = () => {
     try {
       const userData = await AuthService.getUserDetailsById(userId as string);
       setUserProfile(userData);
+      setTotalPosts(userData?.totalPosts || 0);
       setProfileImage(userData?.profilePhoto || null);
     } catch (err) {
       showError('Failed to fetch user profile');
@@ -119,7 +122,7 @@ const UserProfile = () => {
 
         <div className='flex gap-6 mt-2'>
           <span>
-            <strong>{userProfile.totalPosts}</strong> Posts
+            <strong>{totalPosts}</strong> Posts
           </span>
           <span>
             <strong>{userProfile.followersCount || 0}</strong> Followers
@@ -158,6 +161,13 @@ const UserProfile = () => {
           >
             Follow
           </Button>
+        )}
+        {(userProfile.isFollowing || !userProfile.isPrivate) && (
+          <MyPosts
+            userId={userId || ''}
+            isMyProfile={false}
+            setTotalPosts={setTotalPosts}
+          />
         )}
       </div>
     </>

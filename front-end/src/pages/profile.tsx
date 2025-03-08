@@ -140,14 +140,18 @@ const Profile = () => {
           <strong>{totalPosts}</strong> Posts
         </span>
         <span>
-          <strong>0</strong> Followers
+          <strong>{user?.followers || 0}</strong> Followers
         </span>
         <span>
-          <strong>0</strong> Following
+          <strong>{user?.following || 0}</strong> Following
         </span>
       </div>
 
-      <MyPosts setTotalPosts={setTotalPosts} />
+      <MyPosts
+        userId={user?.id || ''}
+        isMyProfile={true}
+        setTotalPosts={setTotalPosts}
+      />
     </div>
   );
 };

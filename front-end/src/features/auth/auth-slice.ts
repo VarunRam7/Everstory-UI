@@ -6,6 +6,8 @@ interface User {
   email: string;
   profilePhoto?: string;
   id: string;
+  followers: number;
+  following: number;
 }
 
 interface AuthState {
