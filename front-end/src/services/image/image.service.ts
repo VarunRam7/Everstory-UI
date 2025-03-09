@@ -4,11 +4,10 @@ import apiStore from '../../store/api.store';
 export default class ImageService {
   private static host = UrlConstants.image_backend;
 
-  static async uploadProfilePhoto(file: File, email: string): Promise<string> {
+  static async uploadProfilePhoto(file: File): Promise<string> {
     return new Promise((resolve, reject) => {
       const formData = new FormData();
       formData.append('file', file);
-      formData.append('email', email);
 
       apiStore
         .getApiClientWithAuthentication()
@@ -31,15 +30,12 @@ export default class ImageService {
     });
   }
 
-  static async removeProfilePhoto(
-    profileImageUrl: string,
-    email: string
-  ): Promise<string> {
+  static async removeProfilePhoto(profileImageUrl: string): Promise<string> {
     return new Promise((resolve, reject) => {
       apiStore
         .getApiClientWithAuthentication()
         .delete(`${this.host}/image/remove-profile-photo`, {
-          data: { profileImageUrl, email },
+          data: { profileImageUrl },
         })
         .then((response) => {
           resolve(response.data.message);
@@ -52,15 +48,10 @@ export default class ImageService {
     });
   }
 
-  static async uploadPost(
-    file: File,
-    userId: string,
-    caption?: string
-  ): Promise<string> {
+  static async uploadPost(file: File, caption?: string): Promise<string> {
     return new Promise((resolve, reject) => {
       const formData = new FormData();
       formData.append('file', file);
-      formData.append('userId', userId);
       formData.append('caption', caption || '');
 
       apiStore

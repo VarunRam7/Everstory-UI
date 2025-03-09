@@ -15,6 +15,7 @@ import { getInitials } from '../utils/string.utils';
 import { logout } from '../features/auth/auth-slice';
 import { motion } from 'framer-motion';
 import { removeFollowRequest } from '../features/follow-request/follow-request-slice';
+import { useQueryClient } from '@tanstack/react-query';
 
 interface SidebarProps {
   collapsed: boolean;
@@ -33,6 +34,7 @@ const Sidebar: React.FC<SidebarProps> = ({ collapsed, setCollapsed }) => {
   const [searchResults, setSearchResults] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const [api, contextHolder] = notification.useNotification();
+  const queryClient = useQueryClient()
 
   const user = useSelector((state: RootState) => state.auth.user);
 
@@ -100,6 +102,8 @@ const Sidebar: React.FC<SidebarProps> = ({ collapsed, setCollapsed }) => {
       api['success']({
         message: `Follow request ${status} successfully 🎉`,
       });
+      queryClient.invalidateQueries({ queryKey: ['homeFeed'] });
+
       if (followRequest.isExpired) {
         dispatch(removeFollowRequest(requestToken));
       }

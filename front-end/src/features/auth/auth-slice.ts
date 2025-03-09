@@ -8,6 +8,7 @@ interface User {
   id: string;
   followers: number;
   following: number;
+  isPrivate: boolean;
 }
 
 interface AuthState {

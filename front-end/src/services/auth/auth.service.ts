@@ -85,4 +85,18 @@ export default class AuthService {
         });
     });
   }
+
+  static async updatePrivacySettings(isPrivate: boolean): Promise<any> {
+    return new Promise((resolve, reject) => {
+      apiStore
+        .getApiClientWithAuthentication()
+        .patch(`${this.host}/auth/privacy`, { isPrivate })
+        .then((response: any) => {
+          resolve(response.data);
+        })
+        .catch((error: any) => {
+          reject(error?.message || 'Failed to update privacy settings');
+        });
+    });
+  }
 }

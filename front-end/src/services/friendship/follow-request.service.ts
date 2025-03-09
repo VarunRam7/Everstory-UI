@@ -5,15 +5,11 @@ import apiStore from '../../store/api.store';
 export default class FollowRequestService {
   private static host = UrlConstants.friendship_backend;
 
-  static async createFollowRequest(
-    requestBy: string,
-    requestTo: string
-  ): Promise<any> {
+  static async createFollowRequest(requestTo: string): Promise<any> {
     return new Promise((resolve, reject) => {
       apiStore
         .getApiClientWithAuthentication()
         .post(`${this.host}/friendship/follow-request`, {
-          requestBy,
           requestTo,
         })
         .then((response: any) => {
@@ -25,16 +21,12 @@ export default class FollowRequestService {
     });
   }
 
-  static async revokeRequest(
-    requestBy: string,
-    requestTo: string
-  ): Promise<any> {
+  static async revokeRequest(requestTo: string): Promise<any> {
     return new Promise((resolve, reject) => {
       apiStore
         .getApiClientWithAuthentication()
         .delete(`${this.host}/friendship/follow-request`, {
           params: {
-            requestBy,
             requestTo,
           },
         })
@@ -47,11 +39,11 @@ export default class FollowRequestService {
     });
   }
 
-  static async getFollowRequests(userId: string): Promise<any> {
+  static async getFollowRequests(): Promise<any> {
     return new Promise((resolve, reject) => {
       apiStore
         .getApiClientWithAuthentication()
-        .get(`${this.host}/friendship/follow-request/${userId}`)
+        .get(`${this.host}/friendship/follow-request`)
         .then((response: any) => {
           resolve(response.data);
         })
