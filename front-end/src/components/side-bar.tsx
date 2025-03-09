@@ -1,8 +1,8 @@
 import { Menu as AntdMenu, Popover, notification } from 'antd';
 import { Heart, Home, Menu, PlusCircle, Search, X } from 'lucide-react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { useCallback, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { useEffect, useState } from 'react';
 
 import AuthService from '../services/auth/auth.service';
 import CreatePostModal from './create-post-modal';
@@ -10,8 +10,8 @@ import FollowRequestService from '../services/friendship/follow-request.service'
 import { ResponseEnum } from '../enums/follow-request-status.enum';
 import { RootState } from '../store';
 import { RouteConstants } from '../constants/route.constants';
+import { debounce } from 'lodash';
 import { getInitials } from '../utils/string.utils';
-import { isEmpty } from 'lodash';
 import { logout } from '../features/auth/auth-slice';
 import { motion } from 'framer-motion';
 import { removeFollowRequest } from '../features/follow-request/follow-request-slice';
@@ -61,29 +61,11 @@ const Sidebar: React.FC<SidebarProps> = ({ collapsed, setCollapsed }) => {
     </AntdMenu>
   );
 
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') {
-        setSearchVisible(false);
-        setSearchQuery('');
-        setSearchResults([]);
-      }
-      if (e.key === 'Enter' && searchQuery.trim()) {
-        fetchUsers();
-      } else if (e.key === 'Enter' && isEmpty(searchQuery)) {
-        setSearchResults([]);
-      }
-    };
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [searchQuery]);
-
-  const fetchUsers = async () => {
-    if (!searchQuery.trim()) return;
-
+  const fetchUsersLogic = async (query: string) => {
+    if (!query.trim()) return;
     try {
       setLoading(true);
-      const users = await AuthService.fetchUsers(searchQuery);
+      const users = await AuthService.fetchUsers(query);
       setSearchResults(users);
     } catch (error) {
       console.error('Error fetching users:', error);
@@ -91,6 +73,12 @@ const Sidebar: React.FC<SidebarProps> = ({ collapsed, setCollapsed }) => {
       setLoading(false);
     }
   };
+
+  const fetchUsers = useCallback(debounce(fetchUsersLogic, 1500), []);
+
+  useEffect(() => {
+    fetchUsers(searchQuery);
+  }, [searchQuery, fetchUsers]);
 
   const handleUserClick = (userId: string) => {
     setSearchVisible(false);
@@ -252,15 +240,6 @@ const Sidebar: React.FC<SidebarProps> = ({ collapsed, setCollapsed }) => {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
             />
-            <button
-              onClick={() => {
-                if (isEmpty(searchQuery)) setSearchResults([]);
-                else fetchUsers();
-              }}
-              className='absolute right-4 top-1/2 transform -translate-y-1/2 text-white'
-            >
-              <Search />
-            </button>
           </div>
 
           {loading && <p className='text-gray-400 mt-4'>Fetching users...</p>}
