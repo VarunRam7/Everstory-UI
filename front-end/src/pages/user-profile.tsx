@@ -6,18 +6,15 @@ import { DownOutlined } from '@ant-design/icons';
 import FollowRequestService from '../services/friendship/follow-request.service';
 import MyPosts from './my-posts';
 import RelationshipService from '../services/friendship/relationship.service';
-import { RootState } from '../store';
 import { getInitials } from '../utils/string.utils';
 import { useParams } from 'react-router-dom';
 import { useQueryClient } from '@tanstack/react-query';
-import { useSelector } from 'react-redux';
 
 const UserProfile = () => {
   const { userId } = useParams();
   const [userProfile, setUserProfile] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [profileImage, setProfileImage] = useState<string | null>(null);
-  const user = useSelector((state: RootState) => state.auth.user);
   const [api, contextHolder] = notification.useNotification();
   const [totalPosts, setTotalPosts] = useState(0);
   const queryClient = useQueryClient();

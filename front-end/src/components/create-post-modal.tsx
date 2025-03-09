@@ -8,14 +8,9 @@ import { useState } from 'react';
 interface CreatePostModalProps {
   visible: boolean;
   onClose: () => void;
-  userId: string;
 }
 
-const CreatePostModal = ({
-  visible,
-  onClose,
-  userId,
-}: CreatePostModalProps) => {
+const CreatePostModal = ({ visible, onClose }: CreatePostModalProps) => {
   const queryClient = useQueryClient();
   const [file, setFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
