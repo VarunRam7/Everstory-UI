@@ -149,7 +149,6 @@ const MyPosts: React.FC<MyPostsProps> = ({
               </button>
             )}
 
-            {/* Full-size Image */}
             <img
               src={selectedPost.imageUrl}
               alt='Selected Post'
