@@ -60,3 +60,7 @@ docker build -t front-end .
 ```
 docker run -it -p 5173:80 front-end
 ```
+
+--------------------
+## Walkthrough video
+[https://drive.google.com/file/d/1goLYTaKcQZ5BnPQ4_ri1giGRPy_jnaL7/view?usp=sharing](url)
