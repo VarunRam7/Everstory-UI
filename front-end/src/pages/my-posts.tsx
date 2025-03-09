@@ -36,7 +36,11 @@ const MyPosts: React.FC<MyPostsProps> = ({
     useInfiniteQuery({
       queryKey: ['myPosts', userId],
       queryFn: async ({ pageParam = 1 }) => {
-        return await ImageService.getMyPosts(userId || '', pageParam, 6);
+        return await ImageService.getMyPosts(
+          isMyProfile ? '' : userId || '',
+          pageParam,
+          6
+        );
       },
       initialPageParam: 1,
       getNextPageParam: (lastPage, allPages) => {

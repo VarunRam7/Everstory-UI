@@ -43,7 +43,7 @@ function App() {
   const fetchFollowRequests = async () => {
     if (!user?.id) return;
     try {
-      const requests = await FollowRequestService.getFollowRequests(user.id);
+      const requests = await FollowRequestService.getFollowRequests();
       dispatch(setFollowRequests(requests));
     } catch (error) {
       console.error('Error fetching follow requests:', error);

@@ -1,4 +1,4 @@
-import { Button, Dropdown, Menu, Spin, notification } from 'antd';
+import { Button, Dropdown, Menu, Spin, Switch, notification } from 'antd';
 import { useEffect, useState } from 'react';
 
 import AuthService from '../services/auth/auth.service';
@@ -9,6 +9,7 @@ import RelationshipService from '../services/friendship/relationship.service';
 import { RootState } from '../store';
 import { getInitials } from '../utils/string.utils';
 import { useParams } from 'react-router-dom';
+import { useQueryClient } from '@tanstack/react-query';
 import { useSelector } from 'react-redux';
 
 const UserProfile = () => {
@@ -19,6 +20,7 @@ const UserProfile = () => {
   const user = useSelector((state: RootState) => state.auth.user);
   const [api, contextHolder] = notification.useNotification();
   const [totalPosts, setTotalPosts] = useState(0);
+  const queryClient = useQueryClient();
 
   const showError = (description: string) => {
     api['error']({
@@ -46,14 +48,19 @@ const UserProfile = () => {
 
   const handleFollowRequest = async () => {
     try {
-      await FollowRequestService.createFollowRequest(
-        user?.id || '',
-        userProfile.id
-      );
+      await FollowRequestService.createFollowRequest(userProfile.id);
       fetchUser();
-      api.success({
-        message: 'Follow request sent successfully 🎉',
-      });
+      queryClient.invalidateQueries({ queryKey: ['homeFeed'] });
+
+      if (userProfile.isPrivate)
+        api.success({
+          message: 'Follow request sent successfully 🎉',
+        });
+      else {
+        api.success({
+          message: `You started following ${userProfile.firstName} 🎉`,
+        });
+      }
     } catch (error: any) {
       showError(error || 'Failed to send follow request');
     }
@@ -61,8 +68,9 @@ const UserProfile = () => {
 
   const handleUnfollow = async () => {
     try {
-      await RelationshipService.unfollowUser(user?.id || '', userProfile.id);
+      await RelationshipService.unfollowUser(userProfile.id);
       fetchUser();
+      queryClient.invalidateQueries({ queryKey: ['homeFeed'] });
       api.success({ message: 'User unfollowed successfully 🎉' });
     } catch (error: any) {
       showError(error || 'Failed to unfollow user');
@@ -71,7 +79,7 @@ const UserProfile = () => {
 
   const handleRevokeRequest = async () => {
     try {
-      await FollowRequestService.revokeRequest(user?.id || '', userProfile.id);
+      await FollowRequestService.revokeRequest(userProfile.id);
       fetchUser();
       api.success({ message: 'Revoked request successfully 🎉' });
     } catch (error: any) {
@@ -162,6 +170,32 @@ const UserProfile = () => {
             Follow
           </Button>
         )}
+        <div className='flex flex-row gap-2 mt-[10px] items-center'>
+          <span
+            style={{
+              fontFamily: 'math',
+            }}
+            className='text-sm'
+          >
+            Public
+          </span>
+          <Switch
+            size='small'
+            checked={userProfile.isPrivate}
+            disabled={true}
+            style={{
+              backgroundColor: userProfile.isPrivate ? '#1677ff' : '#555',
+            }}
+          />
+          <span
+            style={{
+              fontFamily: 'math',
+            }}
+            className='text-sm'
+          >
+            Private
+          </span>
+        </div>
         {(userProfile.isFollowing || !userProfile.isPrivate) && (
           <MyPosts
             userId={userId || ''}

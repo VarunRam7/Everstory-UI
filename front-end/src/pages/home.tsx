@@ -10,6 +10,7 @@ import ImageService from '../services/image/image.service';
 import RelationshipService from '../services/friendship/relationship.service';
 import { RootState } from '../store';
 import { RouteConstants } from '../constants/route.constants';
+import { getInitials } from '../utils/string.utils';
 import { imageSocket } from '../context/image-socket';
 import { login } from '../features/auth/auth-slice';
 import { useInView } from 'react-intersection-observer';
@@ -110,7 +111,7 @@ const Home = () => {
 
   const handleUnfollow = async (post: any) => {
     try {
-      await RelationshipService.unfollowUser(user?.id || '', post.userId);
+      await RelationshipService.unfollowUser(post.userId);
       queryClient.invalidateQueries({ queryKey: ['homeFeed'] });
 
       api.success({ message: 'User unfollowed successfully 🎉' });
@@ -145,11 +146,37 @@ const Home = () => {
                   }}
                 >
                   <div className='flex items-center gap-2'>
-                    <img
-                      src={post.user?.profilePhoto || user?.profilePhoto || ''}
-                      alt={`${post.user?.firstName || user?.firstName} Profile`}
-                      className='w-8 h-8 rounded-full'
-                    />
+                    {post.user ? (
+                      post.user.profilePhoto ? (
+                        <img
+                          src={post.user.profilePhoto}
+                          alt={`${
+                            post.user?.firstName || user?.firstName
+                          } Profile`}
+                          className='w-8 h-8 rounded-full'
+                        />
+                      ) : (
+                        <div className='bg-white text-black px-[6px] py-[4px] font-bold text-xs rounded-md'>
+                          {getInitials(
+                            post.user?.firstName || user?.firstName || ''
+                          )}
+                          {getInitials(
+                            post.user?.lastName || user?.lastName || ''
+                          )}
+                        </div>
+                      )
+                    ) : user?.profilePhoto ? (
+                      <img
+                        src={user.profilePhoto}
+                        alt={`${user?.firstName || user?.firstName} Profile`}
+                        className='w-8 h-8 rounded-full'
+                      />
+                    ) : (
+                      <div className='bg-white text-black px-[6px] py-[4px] font-bold text-xs rounded-md'>
+                        {getInitials(user?.firstName || user?.firstName || '')}
+                        {getInitials(user?.lastName || user?.lastName || '')}
+                      </div>
+                    )}
                     <span className='text-white font-semibold'>
                       {post.user?.firstName || user?.firstName}{' '}
                       {post.user?.lastName || user?.lastName}
@@ -227,10 +254,11 @@ const Home = () => {
       >
         {menuPost && (
           <div className='flex flex-col text-center'>
-            {menuPost.user && (
+            {menuPost.user && menuPost.user.showUnfollow && (
               <button
                 onClick={() => {
                   handleUnfollow(menuPost);
+                  setMenuPost(null);
                 }}
                 className='text-red-500 text-md py-3 !border-b-1 !rounded-br-none !rounded-bl-none !border-b-gray-700 w-full'
               >

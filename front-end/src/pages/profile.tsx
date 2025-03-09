@@ -1,6 +1,7 @@
-import { Modal, Spin, Upload, message } from 'antd';
+import { Modal, Spin, Switch, Upload, message } from 'antd';
 import { useEffect, useState } from 'react';
 
+import AuthService from '../services/auth/auth.service';
 import ImageService from '../services/image/image.service';
 import MyPosts from './my-posts';
 import { RootState } from '../store';
@@ -15,6 +16,7 @@ const Profile = () => {
     user?.profilePhoto || null
   );
   const [totalPosts, setTotalPosts] = useState(0);
+  const [isPrivate, setIsPrivate] = useState<boolean>(true);
 
   useEffect(() => {
     if (user?.profilePhoto) {
@@ -22,14 +24,17 @@ const Profile = () => {
     }
   }, [user?.profilePhoto]);
 
+  useEffect(() => {
+    if (user) {
+      setIsPrivate(user.isPrivate);
+    }
+  }, [user]);
+
   const handleUpload = async (file: File) => {
     setLoading(true);
     setIsModalOpen(false);
     try {
-      const uploadedImageUrl = await ImageService.uploadProfilePhoto(
-        file,
-        user?.email || ''
-      );
+      const uploadedImageUrl = await ImageService.uploadProfilePhoto(file);
       setProfileImage(uploadedImageUrl);
       message.success('Profile photo updated successfully!');
     } catch (error) {
@@ -40,13 +45,20 @@ const Profile = () => {
     }
   };
 
+  const updatePrivacySettings = async (isPrivate: boolean) => {
+    try {
+      await AuthService.updatePrivacySettings(isPrivate);
+    } catch (error) {
+      console.error('Updating privacy settings failed', error);
+    }
+  };
+
   const handleRemovePhoto = async () => {
     setLoading(true);
     setIsModalOpen(false);
     try {
       const response = await ImageService.removeProfilePhoto(
-        profileImage || '',
-        user?.email || ''
+        profileImage || ''
       );
       setProfileImage(null);
       message.success(response);
@@ -147,6 +159,35 @@ const Profile = () => {
         </span>
         <span>
           <strong>{user?.following || 0}</strong> Following
+        </span>
+      </div>
+      <div className='flex flex-row gap-2 mt-[10px] items-center'>
+        <span
+          style={{
+            fontFamily: 'math',
+          }}
+          className='text-sm'
+        >
+          Public
+        </span>
+        <Switch
+          size='small'
+          checked={isPrivate}
+          onChange={(e) => {
+            updatePrivacySettings(e);
+            setIsPrivate(!isPrivate);
+          }}
+          style={{
+            backgroundColor: isPrivate ? '#1677ff' : '#555',
+          }}
+        />
+        <span
+          style={{
+            fontFamily: 'math',
+          }}
+          className='text-sm'
+        >
+          Private
         </span>
       </div>
 

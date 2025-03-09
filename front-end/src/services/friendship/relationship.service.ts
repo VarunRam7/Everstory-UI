@@ -4,16 +4,12 @@ import apiStore from '../../store/api.store';
 export default class RelationshipService {
   private static host = UrlConstants.friendship_backend;
 
-  static async unfollowUser(
-    requestBy: string,
-    requestTo: string
-  ): Promise<any> {
+  static async unfollowUser(requestTo: string): Promise<any> {
     return new Promise((resolve, reject) => {
       apiStore
         .getApiClientWithAuthentication()
         .delete(`${this.host}/friendship/unfollow`, {
           params: {
-            requestBy,
             requestTo,
           },
         })

@@ -38,7 +38,7 @@ const CreatePostModal = ({
 
     setLoading(true);
     try {
-      await ImageService.uploadPost(file, userId, caption);
+      await ImageService.uploadPost(file, caption);
       queryClient.invalidateQueries({ queryKey: ['myPosts'] });
       api['success']({
         message: 'Post uploaded successfully 🎉',
