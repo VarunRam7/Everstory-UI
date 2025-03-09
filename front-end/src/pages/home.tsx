@@ -12,6 +12,7 @@ import { RootState } from '../store';
 import { RouteConstants } from '../constants/route.constants';
 import { getInitials } from '../utils/string.utils';
 import { imageSocket } from '../context/image-socket';
+import { isUndefined } from 'lodash';
 import { login } from '../features/auth/auth-slice';
 import { useInView } from 'react-intersection-observer';
 
@@ -254,17 +255,19 @@ const Home = () => {
       >
         {menuPost && (
           <div className='flex flex-col text-center'>
-            {menuPost.user && menuPost.user.showUnfollow && (
-              <button
-                onClick={() => {
-                  handleUnfollow(menuPost);
-                  setMenuPost(null);
-                }}
-                className='text-red-500 text-md py-3 !border-b-1 !rounded-br-none !rounded-bl-none !border-b-gray-700 w-full'
-              >
-                Unfollow
-              </button>
-            )}
+            {menuPost.user &&
+              (isUndefined(menuPost.user.showUnfollow) ||
+                menuPost.user.showUnfollow) && (
+                <button
+                  onClick={() => {
+                    handleUnfollow(menuPost);
+                    setMenuPost(null);
+                  }}
+                  className='text-red-500 text-md py-3 !border-b-1 !rounded-br-none !rounded-bl-none !border-b-gray-700 w-full'
+                >
+                  Unfollow
+                </button>
+              )}
             <button
               className='text-gray-200 !border-b-1 !rounded-br-none !rounded-bl-none !border-b-gray-700 text-md py-3 w-full'
               onClick={() => {
