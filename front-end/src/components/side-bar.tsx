@@ -34,7 +34,7 @@ const Sidebar: React.FC<SidebarProps> = ({ collapsed, setCollapsed }) => {
   const [searchResults, setSearchResults] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const [api, contextHolder] = notification.useNotification();
-  const queryClient = useQueryClient()
+  const queryClient = useQueryClient();
 
   const user = useSelector((state: RootState) => state.auth.user);
 
@@ -117,6 +117,7 @@ const Sidebar: React.FC<SidebarProps> = ({ collapsed, setCollapsed }) => {
 
   return (
     <>
+      {contextHolder}
       <div
         className={`h-screen fixed left-0 top-0 ${
           collapsed ? 'w-20' : 'w-64'
@@ -225,7 +226,6 @@ const Sidebar: React.FC<SidebarProps> = ({ collapsed, setCollapsed }) => {
         <CreatePostModal
           visible={createPostModalVisible}
           onClose={() => setCreatePostModalVisible(false)}
-          userId={user?.id || ''}
         />
       </div>
       {searchVisible && (
