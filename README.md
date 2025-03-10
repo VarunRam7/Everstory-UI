@@ -58,7 +58,7 @@ docker build -t front-end .
 2. Docker Run
 
 ```
-docker run -it -p 5173:80 front-end
+docker run -d --name ui --network mynetwork -p 5173:80 front-end
 ```
 
 --------------------
