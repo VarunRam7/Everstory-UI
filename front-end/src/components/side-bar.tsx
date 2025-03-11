@@ -131,7 +131,7 @@ const Sidebar: React.FC<SidebarProps> = ({ collapsed, setCollapsed }) => {
         </button>
 
         {!collapsed && (
-          <p className='font-[cursive] text-lg text-center mb-6 text-[25px]'>
+          <p className='font-[cursive] text-lg text-center mb-6 text-[25px] bg-gradient-to-r from-[#FFC0CB] via-[#FFECB3] to-[#FF69B4] bg-[200%_auto] animate-gradient'>
             Everstory
           </p>
         )}
