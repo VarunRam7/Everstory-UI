@@ -5,6 +5,7 @@ import { useEffect, useState } from 'react';
 import AuthService from '../services/auth/auth.service';
 import { RouteConstants } from '../constants/route.constants';
 import breakpoints from '../constants/breakpoints.constants';
+import emailjs from '@emailjs/browser';
 import { login } from '../features/auth/auth-slice';
 import { useDispatch } from 'react-redux';
 
@@ -24,6 +25,26 @@ const Signup = () => {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
+  const sendWelcomeEmail = (values: any) => {
+    const emailParams = {
+      user_name: values.firstName,
+      user_email: values.email,
+      login_link: import.meta.env.VITE_FRONTEND_URL,
+    };
+
+    emailjs
+      .send(
+        import.meta.env.VITE_EMAIL_SERVICE_ID,
+        import.meta.env.VITE_EMAIL_TEMPLATE_ID,
+        emailParams,
+        import.meta.env.VITE_PUBLIC_KEY
+      )
+      .catch((err) => {
+        console.error('Email sending error:', err);
+        message.error('Failed to send welcome email.');
+      });
+  };
+
   const handleSignup = async (values: any) => {
     setLoading(true);
     try {
@@ -40,6 +61,7 @@ const Signup = () => {
         })
       );
       localStorage.setItem('accessToken', data.accessToken);
+      sendWelcomeEmail(values);
       navigate(RouteConstants.HOME, { state: { from: location.pathname } });
     } catch (err) {
       message.error('Signup failed. Please try again.');

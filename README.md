@@ -35,32 +35,46 @@ This is the frontend for Everstory, a memory-driven social platform where users 
 2. ENV File Setup
 
    Create a .env file in the root directory and add:
+
    ```
    VITE_AUTH_BE_HOST=http://localhost:5000
    VITE_IMAGE_BE_HOST=http://localhost:5001
    VITE_FRIENDSHIP_BE_HOST=http://localhost:5002
+   VITE_EMAIL_TEMPLATE_ID = template_6swoihz
+   VITE_EMAIL_SERVICE_ID = service_xocybwp
+   VITE_PUBLIC_KEY = BS5kFCcUPlFCzjdK0
+   VITE_FRONTEND_URL = http://localhost:5173
    ```
+
+```
 
 3. Install Dependencies
 
-   ```
-   npm install
-   ```
+```
+
+npm install
+
+```
 
 ## 🔧 Docker Setup and Running
 
 1. Docker Build
 
 ```
+
 docker build -t front-end .
+
 ```
 
 2. Docker Run
 
 ```
-docker run -d --name ui --network mynetwork -p 5173:80 front-end
+
+docker run -d --name everstory-ui --network mynetwork -p 5173:80 front-end
+
 ```
 
 --------------------
 ## Demo
 [Walkthrough Video](https://drive.google.com/file/d/1goLYTaKcQZ5BnPQ4_ri1giGRPy_jnaL7/view?usp=sharing)
+```
